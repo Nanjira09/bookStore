@@ -1,4 +1,12 @@
+import { useQuery } from "@apollo/client";
+import { GET_AUTHORS } from "../queries/booksQuery";
+
 function AddBook() {
+  const { loading, error, data } = useQuery(GET_AUTHORS);
+
+  if (error) return <p>Something went wrong!</p>;
+  if (loading) return <p>Loading...</p>;
+
   return (
     <form className="w-3/4 mx-auto my-4 flex flex-col justify-center items-center rounded p-2 bg-gradient-to-br from-[#202221] to-[#283A34]">
       <h2 className="text-center">Add A Book</h2>
@@ -14,9 +22,9 @@ function AddBook() {
       />
       <select className="bg-transparent outline-none border-b self-start my-2">
         <option>Select The Author</option>
-        <option>Nanjira</option>
-        <option>Abdul</option>
-        <option>Gamal</option>
+        {data?.authors.map((author) => (
+          <option value={author.id}>{author.name}</option>
+        ))}
       </select>
       <button
         type="button"

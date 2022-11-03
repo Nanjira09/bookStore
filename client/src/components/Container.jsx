@@ -1,41 +1,27 @@
+import { useQuery } from "@apollo/client";
+import { GET_BOOKS } from "../queries/booksQuery";
+
 function Container() {
-  const series = [
-    {
-      id: 1,
-      name: "Into The Badlands",
-      author: "Nanjira",
-    },
-    {
-      id: 2,
-      name: "Seal Six",
-      author: "Nanjira",
-    },
-    {
-      id: 3,
-      name: "The Last Ship",
-      author: "Nanjira",
-    },
-    {
-      id: 4,
-      name: "The Last Resort",
-      author: "Nanjira",
-    },
-  ];
+  const { loading, error, data } = useQuery(GET_BOOKS);
+
+  if (error) return <p>Something went wrong!</p>;
+  if (loading) return <p>Loading...</p>;
+
   return (
-    <div className="w-full flex justify-around p-2">
-      {series.map((serie) => {
+    <div className="w-full flex flex-wrap gap-3 justify-around p-2">
+      {data?.books.map((book) => {
         return (
           <div
-            key={serie.id}
+            key={book.id}
             className={`flex flex-col p-2 rounded-md cursor-pointer transition ease-out delay-75 hover:scale-125 justify-center items-center max-w-max bg-gradient-to-br ${
-              serie.id % 2 === 0
+              book.id % 2 === 0
                 ? "from-[#202221] to-[#283A34]"
                 : "from-[#22211F] to-[#442E29]"
             }`}
           >
-            <p className="font-extralight">{serie.name}</p>
+            <p className="font-extralight">{book.name}</p>
             <span className="self-end font-thin text-xs italic">
-              {serie.author}
+              {book.author.name}
             </span>
           </div>
         );
