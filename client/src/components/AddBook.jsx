@@ -1,8 +1,8 @@
-import { useQuery, useMutation } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import { useState } from "react";
 import { ADD_BOOK } from "../mutations/addBookMutation";
 
-import { GET_AUTHORS, GET_BOOKS } from "../queries/booksQuery";
+import { GET_AUTHORS } from "../queries/booksQuery";
 
 function AddBook() {
   const [name, setName] = useState("");
@@ -10,7 +10,25 @@ function AddBook() {
   const [authorId, setAuthorId] = useState("");
   const { loading, error, data } = useQuery(GET_AUTHORS);
   const [addBook, { error: addError }] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: GET_BOOKS }],
+    update(cache, { data: { addBook } }) {
+      cache.modify({
+        fields: {
+          books(existingBooks = []) {
+            const newBookRef = cache.writeFragment({
+              data: addBook,
+              fragment: gql`
+                fragment NewBook on Book {
+                  name
+                  genre
+                  id
+                }
+              `,
+            });
+            return [...existingBooks, newBookRef];
+          },
+        },
+      });
+    },
   });
 
   if (error) return <p>Something went wrong!</p>;

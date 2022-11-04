@@ -1,11 +1,32 @@
-import { useQuery, useMutation } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import { DELETE_BOOK } from "../mutations/addBookMutation";
 import { GET_BOOKS } from "../queries/booksQuery";
 
 function Container() {
   const { loading, error, data } = useQuery(GET_BOOKS);
   const [deleteBook] = useMutation(DELETE_BOOK, {
-    refetchQueries: [{ query: GET_BOOKS }],
+    update(cache, { data: { deleteBook } }) {
+      cache.modify({
+        fields: {
+          books(existingBooks = []) {
+            const newBookRef = cache.writeFragment({
+              data: deleteBook,
+              fragment: gql`
+                fragment OldBook on Book {
+                  name
+                  id
+                }
+              `,
+            });
+            const id = newBookRef.__ref.split(":")[1];
+            return existingBooks.filter((book) => {
+              const bookId = book.__ref.split(":")[1];
+              return bookId !== id;
+            });
+          },
+        },
+      });
+    },
   });
 
   if (error) return <p>Something went wrong!</p>;
