@@ -40,10 +40,11 @@ function Container() {
 
   return (
     <div className="w-full flex flex-wrap gap-3 justify-around p-2">
-      {data?.books.map((book) => {
+      {data?.books.map((book, index) => {
         return (
           <div
             key={book.id}
+            data-testid={`book-container-${index}`}
             className={`flex flex-col p-2 rounded-md cursor-pointer transition ease-out delay-75 hover:scale-125 justify-center items-center max-w-max bg-gradient-to-br ${
               book.id % 2 === 0
                 ? "from-[#202221] to-[#283A34]"
@@ -51,7 +52,9 @@ function Container() {
             }`}
             onClick={() => handleDelete(book.id)}
           >
-            <p className="font-extralight">{book.name}</p>
+            <p data-testid="book-title" className="font-extralight">
+              {book.name}
+            </p>
             <span className="self-end font-thin text-xs italic">
               {book.author.name}
             </span>

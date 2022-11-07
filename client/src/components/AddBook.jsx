@@ -69,6 +69,7 @@ function AddBook() {
       />
       <select
         onChange={(e) => setAuthorId(e.target.value)}
+        data-testid="select-test"
         className="bg-transparent outline-none border-b self-start my-2"
       >
         <option>Select The Author</option>
@@ -80,6 +81,7 @@ function AddBook() {
       </select>
       <button
         type="submit"
+        disabled={!name && !genre}
         className="bg-gradient-to-r from-[#22211F] to-[#442E29] my-3 cursor-pointer py-1 px-4 self-start rounded-xl"
       >
         Add To Books
